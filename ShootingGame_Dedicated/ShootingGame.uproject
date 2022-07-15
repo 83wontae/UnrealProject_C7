@@ -1,8 +1,15 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.27",
+	"EngineAssociation": "{1EA74015-4633-AE63-8A74-ED82E345433E}",
 	"Category": "",
 	"Description": "",
+	"Modules": [
+		{
+			"Name": "ShootingGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
 	"Plugins": [
 		{
 			"Name": "ApexDestruction",
