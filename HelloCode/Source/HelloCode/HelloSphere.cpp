@@ -25,7 +25,7 @@ AHelloSphere::AHelloSphere()
 	// StaticMeshCompoent로 SphereVisual 생성
 	UStaticMeshComponent* SphereVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
 	// SphereVisual을 RootComponent에 붙인다.
-	SphereVisual->AttachTo(RootComponent);
+	SphereVisual->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	// Shape_Sphere 에셋을 찾아서 SphereAsset에 넣는다.
 	ConstructorHelpers::FObjectFinder<UStaticMesh> SphereAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 
@@ -46,7 +46,7 @@ AHelloSphere::AHelloSphere()
 	UParticleSystemComponent* FireParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FireParticles"));
 
 	// FireParticles을 SphereVisual에 붙인다.
-	FireParticles->AttachTo(SphereVisual);
+	FireParticles->AttachToComponent(SphereVisual, FAttachmentTransformRules::KeepRelativeTransform);
 	// FireParticles을 시작할때 자동으로 활성화 시킨다.
 	FireParticles->bAutoActivate = true;
 
@@ -62,7 +62,7 @@ AHelloSphere::AHelloSphere()
 	// UTextRenderComponent형의 TextRenderComponent 생성
 	TextRenderComponent = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Text"));
 	// TextRenderComponent를 SphereVisual에 붙인다.
-	TextRenderComponent->AttachTo(SphereVisual);
+	TextRenderComponent->AttachToComponent(SphereVisual, FAttachmentTransformRules::KeepRelativeTransform);
 	// TextRenderComponent의 위치 설정
 	TextRenderComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
 	// TextRenderComponent를 중앙 정렬 시킨다.

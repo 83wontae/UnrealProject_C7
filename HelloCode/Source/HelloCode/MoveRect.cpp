@@ -13,7 +13,7 @@ AMoveRect::AMoveRect() :MoveType{ EMoveRect::Rect_Right }
 	RootComponent = Scene;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->AttachTo(Scene);
+	Mesh->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Rock.SM_Rock'"));
 

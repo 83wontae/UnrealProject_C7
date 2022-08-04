@@ -16,13 +16,13 @@ AHybridSphere::AHybridSphere()
 	RootComponent = Sphere;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->AttachTo(Sphere);
+	Mesh->AttachToComponent(Sphere, FAttachmentTransformRules::KeepRelativeTransform);
 
 	Particles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particles"));
-	Particles->AttachTo(Mesh);
+	Particles->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
 
 	Text = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Text"));
-	Text->AttachTo(Mesh);
+	Text->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
 
 	OnActorBeginOverlap.AddDynamic(this, &AHybridSphere::MyOnBeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &AHybridSphere::MyOnEndOverlap);
