@@ -9,8 +9,8 @@
 UENUM(BlueprintType)
 enum class EMoveRL : uint8
 {
-	RL_Right UMETA(Displayer = "Right"),
-	RL_Left UMETA(Displayer = "Left"),
+	RL_Right UMETA(DisplayName = "Right"),
+	RL_Left UMETA(DisplayName = "Left"),
 };
 
 UCLASS()

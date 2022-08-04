@@ -9,10 +9,10 @@
 UENUM(BlueprintType)
 enum class EMoveRect : uint8
 {
-	Rect_Right UMETA(Displayer = "Right"),
-	Rect_Up UMETA(Displayer = "Up"),
-	Rect_Left UMETA(Displayer = "Left"),
-	Rect_Down UMETA(Displayer = "Down"),
+	Rect_Right UMETA(DisplayName = "Right"),
+	Rect_Up UMETA(DisplayName = "Up"),
+	Rect_Left UMETA(DisplayName = "Left"),
+	Rect_Down UMETA(DisplayName = "Down"),
 };
 
 UCLASS()
