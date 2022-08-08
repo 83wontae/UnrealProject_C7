@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "BountyDash.h"
 #include "GameFramework/Character.h"
 #include "BountyDashCharacter.generated.h"
 

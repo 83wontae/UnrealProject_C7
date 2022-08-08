@@ -3,13 +3,13 @@
 #pragma once
 
 #include "BountyDash.h"
-#include "GameFramework/Actor.h"
+#include "BountyDashObject.h"
 #include "Obstacle.generated.h"
 
 class USphereComponent;
 
 UCLASS()
-class BOUNTYDASH_API AObstacle : public AActor
+class BOUNTYDASH_API AObstacle : public ABountyDashObject
 {
 	GENERATED_BODY()
 	
@@ -25,23 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetKillPoint(float point);
-	float GetKillPoint();
-
-private:
-	float KillPoint;
-
-protected:
-	UFUNCTION()
-	virtual void MyOnActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
-
-	UFUNCTION()
-	virtual void MyOnActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
-
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USphereComponent* Collider;
-
 	UPROPERTY(EditAnywhere, BlueprintREadWrite)
 	UStaticMeshComponent* Mesh;
 };

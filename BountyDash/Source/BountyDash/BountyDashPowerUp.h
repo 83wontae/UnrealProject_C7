@@ -2,26 +2,27 @@
 
 #pragma once
 
-#include "BountyDash.h"
+#include "CoreMinimal.h"
 #include "BountyDashObject.h"
-#include "Coin.generated.h"
+#include "BountyDashPowerUp.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BOUNTYDASH_API ACoin : public ABountyDashObject
+class BOUNTYDASH_API ABountyDashPowerUp : public ABountyDashObject
 {
 	GENERATED_BODY()
 	
 public:
-	ACoin();
-
-	virtual void Tick(float DeltaTime) override;
+	ABountyDashPowerUp();
 
 	virtual void MyOnActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor) override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
+
+private:
+	class UPowerUpObject* PowerUp;
 };
