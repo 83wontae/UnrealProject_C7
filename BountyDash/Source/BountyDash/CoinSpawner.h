@@ -50,10 +50,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	float MovementTimeInterval;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABountyDashPowerUp> PowerUpObject;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
+	int32 PowerUpChance;
+
 protected:
 	void SpawnCoin();
 	void SpawnCoinSet();
 	void MoveSpawner();
+	void SpawnPowerUp();
 
 	int32 NumCoinsToSpawn;
 

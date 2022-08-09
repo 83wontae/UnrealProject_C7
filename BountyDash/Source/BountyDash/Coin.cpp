@@ -22,7 +22,7 @@ void ACoin::Tick(float DeltaTime)
 
 void ACoin::MyOnActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	if (OtherActor->GetClass()->IsChildOf(AObstacle::StaticClass()))
+	if (OtherActor->GetClass()->IsChildOf(AObstacle::StaticClass()) && !BeingPulled)
 	{
 		USphereComponent* thisSphere = Cast<USphereComponent>(GetComponentByClass(USphereComponent::StaticClass()));
 
@@ -30,7 +30,10 @@ void ACoin::MyOnActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 
 		if (otherSphere)
 		{
-			AddActorLocalOffset(FVector(0.0f, 0.0f, (otherSphere->GetUnscaledSphereRadius() * 2.0f) + Collider->GetUnscaledSphereRadius()));
+			FVector vec = GetActorLocation();
+			float offsetZ = OtherActor->GetActorLocation().Z + (otherSphere->GetUnscaledSphereRadius() * 2.0f) + Collider->GetUnscaledSphereRadius();
+			SetActorLocation(FVector(vec.X, vec.Y, offsetZ));
+			//AddActorLocalOffset(FVector(0.0f, 0.0f, (otherSphere->GetUnscaledSphereRadius() * 2.0f) + Collider->GetUnscaledSphereRadius()));
 		}
 	}
 

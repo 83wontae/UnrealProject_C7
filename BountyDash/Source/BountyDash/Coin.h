@@ -24,4 +24,7 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
+
+public:
+	bool BeingPulled;
 };

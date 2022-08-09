@@ -8,7 +8,7 @@ public class BountyDash : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PowerUpPlugin" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "PowerUpPlugin", "ApexDestruction" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

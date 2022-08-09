@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BountyDash.h"
+#include "PowerUpObject.h"
 #include "GameFramework/Character.h"
 #include "BountyDashCharacter.generated.h"
 
@@ -56,14 +57,35 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 Score;
 
+	// Smash 시간
+	UPROPERTY(EditAnywhere, Category = PowerUps)
+	float SmashTime;
+
+	// Magnet 시간
+	UPROPERTY(EditAnywhere, Category = PowerUps)
+	float MagnetTime;
+
+	// Magnet 거리
+	UPROPERTY(EditAnywhere, Category = PowerUps)
+	float MagnetReach;
+
+	// 킬 포인트
+	float KillPoint;
+
 private:
 	//캐릭터 서있는 위치 데이터
 	short CurrentLocation;
 	FVector DesiredLocation;
 	bool bBeingPushed;
 
+	//파위 업 속성
+	bool CanSmash;
+	bool CanMagnet;
+
 public:
 	void ScoreUp();
+	void PowerUp(EPowerUp Type);
+	int GetScore();
 
 protected:
 	// 플레이어 좌우의 타깃 위치 이동을 조정한다
@@ -75,4 +97,15 @@ protected:
 
 	UFUNCTION()
 	void MyOnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void StopSmash();
+
+	UFUNCTION()
+	void StopMagnet();
+
+	void CoinMagnet();
+
+	UFUNCTION()
+	void Reset();
 };

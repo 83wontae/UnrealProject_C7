@@ -3,6 +3,9 @@
 
 #include "BountyDashPowerUp.h"
 #include "PowerUpObject.h"
+#include "Obstacle.h"
+#include "Components/SphereComponent.h"
+#include "BountyDashCharacter.h"
 
 ABountyDashPowerUp::ABountyDashPowerUp()
 {
@@ -37,8 +40,32 @@ ABountyDashPowerUp::ABountyDashPowerUp()
 	{
 		Mesh->SetStaticMesh(myMesh.Object);
 	}
+
+	Collider->SetSphereRadius(60);
 }
 
 void ABountyDashPowerUp::MyOnActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	if (OtherActor->GetClass()->IsChildOf(AObstacle::StaticClass()))
+	{
+		USphereComponent* OtherSphere = Cast<USphereComponent>(OtherActor->GetComponentByClass(USphereComponent::StaticClass()));
+
+		if (OtherSphere)
+		{
+			FVector vec = GetActorLocation();
+			float offsetZ = OtherActor->GetActorLocation().Z + (OtherSphere->GetUnscaledSphereRadius() * 2.0f) + Collider->GetUnscaledSphereRadius();
+			SetActorLocation(FVector(vec.X, vec.Y, offsetZ));
+			//AddActorLocalOffset(FVector(0.0f, 0.0f, (OtherSphere->GetUnscaledSphereRadius() * 2.0f) + Collider->GetUnscaledSphereRadius()));
+		}
+	}
+
+	if (OtherActor->GetClass()->IsChildOf(ABountyDashCharacter::StaticClass()))
+	{
+		ABountyDashCharacter* thisChar = Cast<ABountyDashCharacter>(OtherActor);
+		if (thisChar)
+		{
+			thisChar->PowerUp(PowerUp->GetType());
+			GetWorld()->DestroyActor(this);
+		}
+	}
 }
