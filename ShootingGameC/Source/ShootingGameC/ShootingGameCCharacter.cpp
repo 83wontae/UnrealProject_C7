@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "WeaponInterface.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AShootingGameCCharacter
@@ -74,6 +75,9 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AShootingGameCCharacter::OnResetVR);
+
+	// TestKeyF
+	PlayerInputComponent->BindAction("TestKeyF", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
 }
 
 
@@ -96,6 +100,16 @@ void AShootingGameCCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVecto
 void AShootingGameCCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
 		StopJumping();
+}
+
+void AShootingGameCCharacter::PressTestKeyF()
+{
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_PressKey_F(EquippedWeapon);
+	}
 }
 
 void AShootingGameCCharacter::TurnAtRate(float Rate)

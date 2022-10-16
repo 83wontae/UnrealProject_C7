@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponInterface.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
 UCLASS()
-class SHOOTINGGAMEC_API AWeapon : public AActor
+class SHOOTINGGAMEC_API AWeapon : public AActor, public IWeaponInterface
 {
 	GENERATED_BODY()
 	
@@ -26,4 +27,10 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* mesh;
+
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PressKey_F();
+	
+	virtual void PressKey_F_Implementation() override;
 };
