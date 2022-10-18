@@ -3,6 +3,10 @@
 
 #include "Weapon.h"
 #include "WeaponInterface.h"
+#include "GameFramework/Character.h"
+#include "Animation/AnimMontage.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -31,6 +35,13 @@ void AWeapon::Tick(float DeltaTime)
 
 void AWeapon::PressKey_F_Implementation()
 {
+	check(OwnChar);
+	check(AnimMontage_Shoot);
+	check(FireEffect);
+
+	OwnChar->PlayAnimMontage(AnimMontage_Shoot);
+	
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, mesh->GetSocketLocation("muzzle"));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Press Key F"));
 }
 

@@ -32,6 +32,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
 	AActor* EquippedWeapon;
 
+	UPROPERTY(Replicated)
+	AActor* Equipped;
+
 protected:
 
 	/** Resets HMD orientation in VR. */

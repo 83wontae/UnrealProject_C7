@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponInterface.h"
+#include "Net/UnrealNetwork.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AShootingGameCCharacter
@@ -48,6 +49,13 @@ AShootingGameCCharacter::AShootingGameCCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
+void AShootingGameCCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AShootingGameCCharacter, Equipped);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -77,7 +85,7 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AShootingGameCCharacter::OnResetVR);
 
 	// TestKeyF
-	PlayerInputComponent->BindAction("TestKeyF", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
+	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
 }
 
 

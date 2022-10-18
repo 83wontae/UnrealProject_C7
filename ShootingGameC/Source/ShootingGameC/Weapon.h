@@ -28,6 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* mesh;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	ACharacter* OwnChar;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UAnimMontage* AnimMontage_Shoot;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UParticleSystem* FireEffect;
+
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PressKey_F();
