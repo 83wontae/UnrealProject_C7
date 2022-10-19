@@ -10,12 +10,16 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AShootingGameCCharacter
 
 AShootingGameCCharacter::AShootingGameCCharacter()
 {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -53,7 +57,8 @@ void AShootingGameCCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AShootingGameCCharacter, Equipped);
+	DOREPLIFETIME(AShootingGameCCharacter, PawnDiraction);
+	DOREPLIFETIME(AShootingGameCCharacter, PawnControlPitch);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,6 +93,38 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
 }
 
+
+void AShootingGameCCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (Controller == UGameplayStatics::GetPlayerController(GetWorld(), 0))
+	{
+		PawnDiraction = GetMesh()->GetAnimInstance()->CalculateDirection(GetVelocity(), GetActorRotation());
+		PawnControlPitch = GetControlRotation().Pitch;
+
+		if (Controller->HasAuthority() == false)
+		{
+			ServerUpdateDir(PawnDiraction, PawnControlPitch);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+				FString::Printf(TEXT("Send ServerUpdateDir")));
+		}
+	}
+}
+
+bool AShootingGameCCharacter::ServerUpdateDir_Validate(const float Diraction, const float ControlPitch)
+{
+	return true;
+}
+
+void AShootingGameCCharacter::ServerUpdateDir_Implementation(const float Diraction, const float ControlPitch)
+{
+	PawnDiraction = Diraction;
+	PawnControlPitch = ControlPitch;
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		FString::Printf(TEXT("ServerUpdateDir_Implementation Diraction=%d, ControlPitch=%d"), PawnDiraction, PawnControlPitch));
+}
 
 void AShootingGameCCharacter::OnResetVR()
 {

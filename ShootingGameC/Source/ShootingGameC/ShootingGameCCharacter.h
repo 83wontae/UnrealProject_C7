@@ -32,8 +32,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
 	AActor* EquippedWeapon;
 
-	UPROPERTY(Replicated)
-	AActor* Equipped;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
+	float PawnDiraction;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
+	float PawnControlPitch;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+private:
+	UFUNCTION(Server, Unreliable, WithValidation)
+	void ServerUpdateDir(const float Diraction, const float ControlPitch);
+
 
 protected:
 

@@ -25,16 +25,23 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	UFUNCTION(Server, Reliable)
+	void ServerPullTrigger(const FVector vStart, const FVector vEnd);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPullTrigger();
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* mesh;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
 	ACharacter* OwnChar;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
 	UAnimMontage* AnimMontage_Shoot;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
 	UParticleSystem* FireEffect;
 
 public:
