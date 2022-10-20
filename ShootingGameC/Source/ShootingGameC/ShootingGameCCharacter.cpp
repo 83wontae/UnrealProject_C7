@@ -59,6 +59,7 @@ void AShootingGameCCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 
 	DOREPLIFETIME(AShootingGameCCharacter, PawnDiraction);
 	DOREPLIFETIME(AShootingGameCCharacter, PawnControlPitch);
+	DOREPLIFETIME(AShootingGameCCharacter, EquippedWeapon);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -106,8 +107,7 @@ void AShootingGameCCharacter::Tick(float DeltaTime)
 		if (Controller->HasAuthority() == false)
 		{
 			ServerUpdateDir(PawnDiraction, PawnControlPitch);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-				FString::Printf(TEXT("Send ServerUpdateDir")));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Send ServerUpdateDir")));
 		}
 	}
 }

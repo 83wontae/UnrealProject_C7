@@ -29,7 +29,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = Camera)
 	AActor* EquippedWeapon;
 
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
