@@ -11,6 +11,7 @@
 #include "WeaponInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "ShootingPlayerState.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AShootingGameCCharacter
@@ -91,7 +92,10 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AShootingGameCCharacter::OnResetVR);
 
 	// TestKeyF
-	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
+	PlayerInputComponent->BindAction("TestKeyF", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
+
+	// ShootKey
+	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressShootKey);
 }
 
 
@@ -122,8 +126,8 @@ void AShootingGameCCharacter::ServerUpdateDir_Implementation(const float Diracti
 	PawnDiraction = Diraction;
 	PawnControlPitch = ControlPitch;
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-		FString::Printf(TEXT("ServerUpdateDir_Implementation Diraction=%d, ControlPitch=%d"), PawnDiraction, PawnControlPitch));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+	//	FString::Printf(TEXT("ServerUpdateDir_Implementation Diraction=%f, ControlPitch=%f"), PawnDiraction, PawnControlPitch));
 }
 
 void AShootingGameCCharacter::OnResetVR()
@@ -139,15 +143,24 @@ void AShootingGameCCharacter::OnResetVR()
 
 void AShootingGameCCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AShootingGameCCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AShootingGameCCharacter::PressTestKeyF()
+{
+	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
+	if (ps)
+	{
+		ps->AddDamage(10);
+	}
+}
+
+void AShootingGameCCharacter::PressShootKey()
 {
 	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
 

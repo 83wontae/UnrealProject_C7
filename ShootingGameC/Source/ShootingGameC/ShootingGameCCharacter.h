@@ -78,6 +78,8 @@ protected:
 
 	void PressTestKeyF();
 
+	void PressShootKey();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
