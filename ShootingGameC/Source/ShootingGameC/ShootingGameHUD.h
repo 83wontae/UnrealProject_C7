@@ -24,7 +24,18 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UUserWidget* HudWidget;
 
+public:
+	UFUNCTION(BlueprintNativeEvent)
+	void OnUpdateMyDamage(float Damage);
+
+	void OnUpdateMyDamage_Implementation(float Damage);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void BindPlayerState();
+
+protected:
+	FTimerHandle th_BindPlayerState;
 };

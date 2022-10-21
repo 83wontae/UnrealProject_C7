@@ -53,23 +53,31 @@ void AWeapon::ServerPullTrigger_Implementation(const FVector vStart, const FVect
 	FHitResult result;
 	bool isHit = GetWorld()->LineTraceSingleByObjectType(result, vStart, vEnd, ECollisionChannel::ECC_Pawn);
 
+	DrawDebugLine(GetWorld(), vStart, vEnd, FColor::Yellow, false, 5.0f);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ServerPullTrigger_Implementation"));
+
 	if (isHit)
 	{
 		FString actorName;
 		result.GetActor()->GetName(actorName);
 
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("ServerPullTrigger HitActor-%s"), *actorName));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		//	FString::Printf(TEXT("ServerPullTrigger HitActor-%s"), *actorName));
 
-		DrawDebugLine(GetWorld(), vStart, vEnd, FColor::Yellow, false, 2.0f);
-
-		MulticastPullTrigger();
+		if (result.GetActor())
+		{
+			UGameplayStatics::ApplyDamage(result.GetActor(), 10, 
+				result.GetActor()->GetInstigatorController(), this, UDamageType::StaticClass());
+		}
 	}
+
+	MulticastPullTrigger();
 }
 
 void AWeapon::MulticastPullTrigger_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("MulticastPullTrigger_Implementation"));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("MulticastPullTrigger_Implementation"));
 
 	check(OwnChar);
 	check(AnimMontage_Shoot);
@@ -83,13 +91,13 @@ void AWeapon::MulticastPullTrigger_Implementation()
 
 void AWeapon::PressKey_F_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PressKey_F_Implementation"));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PressKey_F_Implementation"));
 
 	APlayerController* caster = Cast<APlayerController>(OwnChar->Controller);
 	if (caster)
 	{
 		FVector vForward = caster->PlayerCameraManager->GetActorForwardVector();
-		FVector vStart = caster->PlayerCameraManager->GetCameraLocation() + (vForward * 500);
+		FVector vStart = caster->PlayerCameraManager->GetCameraLocation() + (vForward * 300);
 		FVector vEnd = vStart + (vForward * 5000);
 		ServerPullTrigger(vStart, vEnd);
 	}

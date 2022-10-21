@@ -116,6 +116,28 @@ void AShootingGameCCharacter::Tick(float DeltaTime)
 	}
 }
 
+float AShootingGameCCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float trueDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		FString::Printf(TEXT("TakeDamage Damage=%f EventInstigator=%s"), trueDamage, *EventInstigator->GetName()));
+
+	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
+	if (ps)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("TakeDamage CurrentHealth=%f"), ps->GetCurrentHealth()));
+
+		ps->AddDamage(trueDamage);
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("TakeDamage2 CurrentHealth=%f"), ps->GetCurrentHealth()));
+	}
+
+	return 0.0f;
+}
+
 bool AShootingGameCCharacter::ServerUpdateDir_Validate(const float Diraction, const float ControlPitch)
 {
 	return true;
@@ -156,7 +178,13 @@ void AShootingGameCCharacter::PressTestKeyF()
 	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
 	if (ps)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("TakeDamage1 CurrentHealth=%f"), ps->GetCurrentHealth()));
+
 		ps->AddDamage(10);
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("TakeDamage2 CurrentHealth=%f"), ps->GetCurrentHealth()));
 	}
 }
 
