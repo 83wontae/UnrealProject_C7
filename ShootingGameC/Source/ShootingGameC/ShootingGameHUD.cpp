@@ -13,7 +13,7 @@ AShootingGameHUD::AShootingGameHUD()
 {
 }
 
-void AShootingGameHUD::OnUpdateMyDamage_Implementation(float Damage)
+void AShootingGameHUD::OnUpdateMyDamage_Implementation(float CurrentHealth)
 {
 }
 
@@ -30,8 +30,8 @@ void AShootingGameHUD::BeginPlay()
 
 void AShootingGameHUD::BindPlayerState()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-		TEXT("Try BindPlayerState"));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+	//	TEXT("Try BindPlayerState"));
 	APlayerController* pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (pc)
 	{
@@ -42,8 +42,8 @@ void AShootingGameHUD::BindPlayerState()
 
 			OnUpdateMyDamage(ps->GetCurrentHealth());
 
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-				TEXT("Complate BindPlayerState"));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			//	TEXT("Complate BindPlayerState"));
 			return;
 		}
 	}

@@ -7,16 +7,16 @@
 #include "ShootingPlayerState.generated.h"
 
 DECLARE_DELEGATE(FDele_UpdateHp);
-DECLARE_DELEGATE_OneParam(FDele_UpdateHp_OneParam, int);
+DECLARE_DELEGATE_OneParam(FDele_UpdateHp_OneParam, float);
 
 /**
- * 
+ *
  */
 UCLASS()
 class SHOOTINGGAMEC_API AShootingPlayerState : public APlayerState
 {
 	GENERATED_BODY()
-	
+
 public:
 	AShootingPlayerState();
 
@@ -24,16 +24,13 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 
+public:
 	UFUNCTION()
 	void OnRep_CurrentHealth();
-
-public:
-	void OnUpdateHp();
 
 	/** Getter for Current Health.*/
 	UFUNCTION(BlueprintPure, Category = "Health")
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
-
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddDamage(float Damage);

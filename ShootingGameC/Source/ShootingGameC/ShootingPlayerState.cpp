@@ -7,11 +7,6 @@
 
 AShootingPlayerState::AShootingPlayerState()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	bReplicates = true;
-
 	CurrentHealth = 100.0f;
 }
 
@@ -24,19 +19,11 @@ void AShootingPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 
 void AShootingPlayerState::OnRep_CurrentHealth()
 {
-	OnUpdateHp();
-}
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		FString::Printf(TEXT("UpdateHp CurrentHealth=%f"), GetCurrentHealth()));
 
-void AShootingPlayerState::OnUpdateHp()
-{
-	if (GetLocalRole() != ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("UpdateHp CurrentHealth=%d"), GetCurrentHealth()));
-
-		Fuc_Dele_UpdateHp.ExecuteIfBound();
-		Fuc_Dele_UpdateHp_OneParam.ExecuteIfBound(GetCurrentHealth());
-	}
+	Fuc_Dele_UpdateHp.ExecuteIfBound();
+	Fuc_Dele_UpdateHp_OneParam.ExecuteIfBound(GetCurrentHealth());
 }
 
 void AShootingPlayerState::AddDamage(float Damage)
@@ -44,7 +31,7 @@ void AShootingPlayerState::AddDamage(float Damage)
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("AddDamage CurrentHealth=%d , Damage=%d"), GetCurrentHealth(), Damage));
+			FString::Printf(TEXT("AddDamage CurrentHealth=%f , Damage=%f"), GetCurrentHealth(), Damage));
 
 		CurrentHealth = CurrentHealth - Damage;
 

@@ -29,14 +29,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = Camera)
+private:
+	UPROPERTY(Replicated)
 	AActor* EquippedWeapon;
 
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated)
 	float PawnDiraction;
 
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated)
 	float PawnControlPitch;
+
+	bool IsRagDoll;
+
+protected:
+	FTimerHandle th_BindPlayerState;
 
 public:
 	// Called every frame
@@ -44,10 +50,40 @@ public:
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	void DoRagdoll();
+
+	UFUNCTION(BlueprintCallable)
+	void DoGetup();
+
+	UFUNCTION(BlueprintCallable)
+	AActor* SetEquippedWeapon(AActor* Weapon) { EquippedWeapon = Weapon; return EquippedWeapon; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE AActor* GetEquippedWeapon() const { return EquippedWeapon; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetPawnDiraction() const { return PawnDiraction; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetPawnControlPitch() const { return PawnControlPitch; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetIsRagDoll() const { return IsRagDoll; }
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnUpdateDamage(float CurrentHealth);
+
+	void OnUpdateDamage_Implementation(float CurrentHealth);
+
 private:
 	UFUNCTION(Server, Unreliable, WithValidation)
 	void ServerUpdateDir(const float Diraction, const float ControlPitch);
 
+	void BindPlayerState();
 
 protected:
 

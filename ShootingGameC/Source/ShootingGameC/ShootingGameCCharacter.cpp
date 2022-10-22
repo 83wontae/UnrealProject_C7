@@ -114,28 +114,62 @@ void AShootingGameCCharacter::Tick(float DeltaTime)
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Send ServerUpdateDir")));
 		}
 	}
+
+	if (IsRagDoll)
+	{
+		// 월드->상대
+		// FVector relativeLoc = GetTransform().InverseTransformPosition(someWorldPosition);
+
+		// 상대->월드
+		FVector vAttach = GetMesh()->GetSocketLocation("pelvis") + FVector(0.0f, 0.0f, 50.0f);
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("vAttach Location=(%f,%f,%f)"), vAttach.X, vAttach.Y, vAttach.Z));
+		
+		SetActorLocation(vAttach);
+	}
 }
 
 float AShootingGameCCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float trueDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-		FString::Printf(TEXT("TakeDamage Damage=%f EventInstigator=%s"), trueDamage, *EventInstigator->GetName()));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+	//	FString::Printf(TEXT("TakeDamage Damage=%f EventInstigator=%s"), trueDamage, *EventInstigator->GetName()));
 
 	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
 	if (ps)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("TakeDamage CurrentHealth=%f"), ps->GetCurrentHealth()));
-
 		ps->AddDamage(trueDamage);
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("TakeDamage2 CurrentHealth=%f"), ps->GetCurrentHealth()));
 	}
 
 	return 0.0f;
+}
+
+void AShootingGameCCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FTimerManager& timerManager = GetWorld()->GetTimerManager();
+	timerManager.SetTimer(th_BindPlayerState, this, &AShootingGameCCharacter::BindPlayerState, 0.1f, false);
+}
+
+void AShootingGameCCharacter::DoRagdoll()
+{
+	IsRagDoll = true;
+
+	GetMesh()->SetSimulatePhysics(true);
+}
+
+void AShootingGameCCharacter::DoGetup()
+{
+	IsRagDoll = false;
+
+	GetMesh()->SetSimulatePhysics(false);
+
+	GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	FVector loc = { 0.0f,0.0f,-97.0f };
+	FRotator Rot = { 0.0f,-90.0f, 0.0f };
+	GetMesh()->SetRelativeLocationAndRotation(loc, Rot);
 }
 
 bool AShootingGameCCharacter::ServerUpdateDir_Validate(const float Diraction, const float ControlPitch)
@@ -150,6 +184,32 @@ void AShootingGameCCharacter::ServerUpdateDir_Implementation(const float Diracti
 
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
 	//	FString::Printf(TEXT("ServerUpdateDir_Implementation Diraction=%f, ControlPitch=%f"), PawnDiraction, PawnControlPitch));
+}
+
+void AShootingGameCCharacter::OnUpdateDamage_Implementation(float CurrentHealth)
+{
+	if (CurrentHealth <= 0)
+		DoRagdoll();
+}
+
+void AShootingGameCCharacter::BindPlayerState()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		TEXT("Try BindPlayerState"));
+	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
+	if (ps)
+	{
+		ps->Fuc_Dele_UpdateHp_OneParam.BindUFunction(this, FName("OnUpdateDamage"));
+
+		OnUpdateDamage(ps->GetCurrentHealth());
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			TEXT("Complate BindPlayerState"));
+		return;
+	}
+
+	FTimerManager& timerManager = GetWorld()->GetTimerManager();
+	timerManager.SetTimer(th_BindPlayerState, this, &AShootingGameCCharacter::BindPlayerState, 0.1f, false);
 }
 
 void AShootingGameCCharacter::OnResetVR()
@@ -178,13 +238,16 @@ void AShootingGameCCharacter::PressTestKeyF()
 	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
 	if (ps)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("TakeDamage1 CurrentHealth=%f"), ps->GetCurrentHealth()));
+		ps->AddDamage(10.0f);
+	}
 
-		ps->AddDamage(10);
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("TakeDamage2 CurrentHealth=%f"), ps->GetCurrentHealth()));
+	if (IsRagDoll)
+	{
+		DoGetup();
+	}
+	else
+	{
+		DoRagdoll();
 	}
 }
 

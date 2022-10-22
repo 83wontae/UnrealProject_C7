@@ -26,9 +26,9 @@ public:
 
 public:
 	UFUNCTION(BlueprintNativeEvent)
-	void OnUpdateMyDamage(float Damage);
+	void OnUpdateMyDamage(float CurrentHealth);
 
-	void OnUpdateMyDamage_Implementation(float Damage);
+	void OnUpdateMyDamage_Implementation(float CurrentHealth);
 
 protected:
 	// Called when the game starts or when spawned
