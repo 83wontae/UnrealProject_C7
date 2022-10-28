@@ -26,10 +26,19 @@ public:
 
 public:
 	UFUNCTION(Server, Reliable)
-	void ServerPullTrigger(const FVector vStart, const FVector vEnd);
+	void ServerPullTrigger();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPullTrigger();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReload();
+
+	UFUNCTION(Server, Reliable)
+	void ServerNotifyShoot(const FVector vStart, const FVector vEnd);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -42,11 +51,56 @@ public:
 	UAnimMontage* AnimMontage_Shoot;
 
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
+	UAnimMontage* AnimMontage_Reload;
+
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
 	UParticleSystem* FireEffect;
+
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmo)
+	int CurrentAmmo;
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PressKey_F();
 	
 	virtual void PressKey_F_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PressKey_R();
+
+	virtual void PressKey_R_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void NotifyShoot();
+
+	virtual void NotifyShoot_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void NotifyReload();
+
+	virtual void NotifyReload_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnCharacterEquip(ACharacter* targetChar);
+
+	virtual void OnCharacterEquip_Implementation(ACharacter* targetChar) override;
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsCanShoot() const { return (CurrentAmmo > 0) ? true : false; }
+
+	UFUNCTION()
+	void OnRep_CurrentAmmo();
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE int GetCurrentAmmo() const { return CurrentAmmo; }
+
+	UFUNCTION(BlueprintCallable)
+	void UseAmmo();
+
+	UFUNCTION(BlueprintCallable)
+	void DoReload();
+
+	UFUNCTION(BlueprintCallable)
+	void OnUpdateHUD();
 };

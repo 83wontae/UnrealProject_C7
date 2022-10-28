@@ -60,7 +60,7 @@ public:
 	void DoGetup();
 
 	UFUNCTION(BlueprintCallable)
-	AActor* SetEquippedWeapon(AActor* Weapon) { EquippedWeapon = Weapon; return EquippedWeapon; }
+	AActor* SetEquippedWeapon(AActor* Weapon);
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE AActor* GetEquippedWeapon() const { return EquippedWeapon; }
@@ -78,6 +78,12 @@ public:
 	void OnUpdateDamage(float CurrentHealth);
 
 	void OnUpdateDamage_Implementation(float CurrentHealth);
+
+	UFUNCTION(BlueprintCallable)
+	void OnNotifyShoot();
+
+	UFUNCTION(BlueprintCallable)
+	void OnNotifyReload();
 
 private:
 	UFUNCTION(Server, Unreliable, WithValidation)
@@ -117,6 +123,8 @@ protected:
 	void PressTestKeyF();
 
 	void PressShootKey();
+
+	void PressReloadKey();
 
 protected:
 	// APawn interface

@@ -11,6 +11,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "DrawDebugHelpers.h"
+#include "ShootingGameHUD.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -23,6 +24,8 @@ AWeapon::AWeapon()
 	bool bIsImplemented = GetClass()->ImplementsInterface(UWeaponInterface::StaticClass());
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+
+	CurrentAmmo = 30;
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -31,7 +34,9 @@ void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetim
 
 	DOREPLIFETIME(AWeapon, OwnChar);
 	DOREPLIFETIME(AWeapon, AnimMontage_Shoot);
+	DOREPLIFETIME(AWeapon, AnimMontage_Reload);
 	DOREPLIFETIME(AWeapon, FireEffect);
+	DOREPLIFETIME(AWeapon, CurrentAmmo);
 }
 
 // Called when the game starts or when spawned
@@ -48,28 +53,11 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
-void AWeapon::ServerPullTrigger_Implementation(const FVector vStart, const FVector vEnd)
+void AWeapon::ServerPullTrigger_Implementation()
 {
-	FHitResult result;
-	bool isHit = GetWorld()->LineTraceSingleByObjectType(result, vStart, vEnd, ECollisionChannel::ECC_Pawn);
-
-	DrawDebugLine(GetWorld(), vStart, vEnd, FColor::Yellow, false, 5.0f);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ServerPullTrigger_Implementation"));
-
-	if (isHit)
+	if (IsCanShoot())
 	{
-		FString actorName;
-		result.GetActor()->GetName(actorName);
-
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-		//	FString::Printf(TEXT("ServerPullTrigger HitActor-%s"), *actorName));
-
-		if (result.GetActor())
-		{
-			UGameplayStatics::ApplyDamage(result.GetActor(), 10, 
-				result.GetActor()->GetInstigatorController(), this, UDamageType::StaticClass());
-		}
+		UseAmmo();
 	}
 
 	MulticastPullTrigger();
@@ -89,7 +77,57 @@ void AWeapon::MulticastPullTrigger_Implementation()
 		, mesh->GetSocketLocation("muzzle"), mesh->GetSocketRotation("muzzle"), FVector(0.2f, 0.2f, 0.2f));
 }
 
+void AWeapon::ServerReload_Implementation()
+{
+	MulticastReload();
+}
+
+void AWeapon::MulticastReload_Implementation()
+{
+	check(OwnChar);
+	check(AnimMontage_Reload);
+
+	OwnChar->PlayAnimMontage(AnimMontage_Reload);
+}
+
+void AWeapon::ServerNotifyShoot_Implementation(const FVector vStart, const FVector vEnd)
+{
+	FHitResult result;
+	bool isHit = GetWorld()->LineTraceSingleByObjectType(result, vStart, vEnd, ECollisionChannel::ECC_Pawn);
+
+	DrawDebugLine(GetWorld(), vStart, vEnd, FColor::Yellow, false, 5.0f);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ServerPullTrigger_Implementation"));
+
+	if (isHit)
+	{
+		FString actorName;
+		result.GetActor()->GetName(actorName);
+
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		//	FString::Printf(TEXT("ServerPullTrigger HitActor-%s"), *actorName));
+
+		if (result.GetActor())
+		{
+			UGameplayStatics::ApplyDamage(result.GetActor(), 10,
+				result.GetActor()->GetInstigatorController(), this, UDamageType::StaticClass());
+		}
+	}
+
+}
+
 void AWeapon::PressKey_F_Implementation()
+{
+	ServerPullTrigger();
+}
+
+void AWeapon::PressKey_R_Implementation()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PressKey_R_Implementation"));
+	ServerReload();
+}
+
+void AWeapon::NotifyShoot_Implementation()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PressKey_F_Implementation"));
 
@@ -99,7 +137,55 @@ void AWeapon::PressKey_F_Implementation()
 		FVector vForward = caster->PlayerCameraManager->GetActorForwardVector();
 		FVector vStart = caster->PlayerCameraManager->GetCameraLocation() + (vForward * 300);
 		FVector vEnd = vStart + (vForward * 5000);
-		ServerPullTrigger(vStart, vEnd);
+		ServerNotifyShoot(vStart, vEnd);
+	}
+}
+
+void AWeapon::NotifyReload_Implementation()
+{
+	DoReload();
+}
+
+void AWeapon::OnCharacterEquip_Implementation(ACharacter* targetChar)
+{
+	OwnChar = targetChar;
+	OnUpdateHUD();
+}
+
+void AWeapon::OnRep_CurrentAmmo()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,	FString::Printf(TEXT("OnRep_CurrentAmmo CurrentAmmo=%f"), GetCurrentAmmo()));
+
+	OnUpdateHUD();
+}
+
+void AWeapon::UseAmmo()
+{
+	CurrentAmmo = CurrentAmmo - 1;
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		OnRep_CurrentAmmo();
+	}
+}
+
+void AWeapon::DoReload()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		CurrentAmmo = 30;
+
+		OnRep_CurrentAmmo();
+	}
+}
+
+void AWeapon::OnUpdateHUD()
+{
+	APlayerController* pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (OwnChar->GetController() == pc)
+	{
+		AShootingGameHUD* hud = Cast<AShootingGameHUD>(pc->GetHUD());
+		hud->OnUpdateAmmo(GetCurrentAmmo());
 	}
 }
 

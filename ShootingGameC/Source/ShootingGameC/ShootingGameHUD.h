@@ -30,6 +30,11 @@ public:
 
 	void OnUpdateMyDamage_Implementation(float CurrentHealth);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnUpdateAmmo(int CurrentAmmo);
+
+	void OnUpdateAmmo_Implementation(int CurrentAmmo);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

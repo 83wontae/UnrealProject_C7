@@ -15,9 +15,28 @@ class SHOOTINGGAMEC_API IWeaponInterface
     GENERATED_BODY()
 
 public:
-    /** 이 오브젝트를 활성화시키는 트리거 볼륨에 반응합니다. 반응에 성공하면 true 를 반환합니다. */
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
     void PressKey_F();
 
-    virtual void PressKey_F_Implementation(){};
+    virtual void PressKey_F_Implementation() {};
+
+    UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+    void PressKey_R();
+
+    virtual void PressKey_R_Implementation() {};
+
+    UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+    void NotifyShoot();
+
+    virtual void NotifyShoot_Implementation() {};
+
+    UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+    void NotifyReload();
+
+    virtual void NotifyReload_Implementation() {};
+
+    UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+    void OnCharacterEquip(ACharacter* targetChar);
+
+    virtual void OnCharacterEquip_Implementation(ACharacter* targetChar) {};
 };

@@ -22,8 +22,18 @@ void AShootingPlayerState::OnRep_CurrentHealth()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
 		FString::Printf(TEXT("UpdateHp CurrentHealth=%f"), GetCurrentHealth()));
 
-	Fuc_Dele_UpdateHp.ExecuteIfBound();
-	Fuc_Dele_UpdateHp_OneParam.ExecuteIfBound(GetCurrentHealth());
+	if(Fuc_Dele_UpdateHp.IsBound())
+		Fuc_Dele_UpdateHp.Broadcast();
+
+	if (Fuc_Dele_UpdateHp_OneParam.IsBound())
+	{
+		Fuc_Dele_UpdateHp_OneParam.Broadcast(GetCurrentHealth());
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("None Bound Fuc_Dele_UpdateHp_OneParam!")));
+	}
 }
 
 void AShootingPlayerState::AddDamage(float Damage)

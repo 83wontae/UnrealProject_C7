@@ -96,6 +96,9 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	// ShootKey
 	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressShootKey);
+
+	// Reload
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShootingGameCCharacter::PressReloadKey);
 }
 
 
@@ -172,6 +175,21 @@ void AShootingGameCCharacter::DoGetup()
 	GetMesh()->SetRelativeLocationAndRotation(loc, Rot);
 }
 
+AActor* AShootingGameCCharacter::SetEquippedWeapon(AActor* Weapon)
+{
+	EquippedWeapon = Weapon;
+	Weapon->SetOwner(GetController());
+
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_OnCharacterEquip(EquippedWeapon, this);
+	}
+
+	return EquippedWeapon;
+}
+
 bool AShootingGameCCharacter::ServerUpdateDir_Validate(const float Diraction, const float ControlPitch)
 {
 	return true;
@@ -192,19 +210,46 @@ void AShootingGameCCharacter::OnUpdateDamage_Implementation(float CurrentHealth)
 		DoRagdoll();
 }
 
+void AShootingGameCCharacter::OnNotifyShoot()
+{
+	if (Controller != UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		return;
+
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_NotifyShoot(EquippedWeapon);
+	}
+}
+
+void AShootingGameCCharacter::OnNotifyReload()
+{
+	if (Controller != UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		return;
+
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_NotifyReload(EquippedWeapon);
+	}
+}
+
 void AShootingGameCCharacter::BindPlayerState()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
 		TEXT("Try BindPlayerState"));
+
 	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
 	if (ps)
 	{
-		ps->Fuc_Dele_UpdateHp_OneParam.BindUFunction(this, FName("OnUpdateDamage"));
+		ps->Fuc_Dele_UpdateHp_OneParam.AddUFunction(this, FName("OnUpdateDamage"));
 
 		OnUpdateDamage(ps->GetCurrentHealth());
 
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			TEXT("Complate BindPlayerState"));
+			TEXT("Character Complate BindPlayerState"));
 		return;
 	}
 
@@ -258,6 +303,18 @@ void AShootingGameCCharacter::PressShootKey()
 	if (InterfaceObj)
 	{
 		InterfaceObj->Execute_PressKey_F(EquippedWeapon);
+	}
+}
+
+void AShootingGameCCharacter::PressReloadKey()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PressReloadKey"));
+
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_PressKey_R(EquippedWeapon);
 	}
 }
 

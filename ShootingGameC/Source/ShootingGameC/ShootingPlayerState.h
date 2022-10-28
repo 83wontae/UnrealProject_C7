@@ -6,8 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "ShootingPlayerState.generated.h"
 
-DECLARE_DELEGATE(FDele_UpdateHp);
-DECLARE_DELEGATE_OneParam(FDele_UpdateHp_OneParam, float);
+DECLARE_MULTICAST_DELEGATE(FDele_Multi_UpdateHp);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_UpdateHp_OneParam, float);
 
 /**
  *
@@ -35,6 +35,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddDamage(float Damage);
 
-	FDele_UpdateHp Fuc_Dele_UpdateHp;
-	FDele_UpdateHp_OneParam Fuc_Dele_UpdateHp_OneParam;
+	FDele_Multi_UpdateHp Fuc_Dele_UpdateHp;
+	FDele_Multi_UpdateHp_OneParam Fuc_Dele_UpdateHp_OneParam;
 };
