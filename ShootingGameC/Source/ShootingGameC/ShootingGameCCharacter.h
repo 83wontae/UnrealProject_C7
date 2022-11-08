@@ -124,6 +124,8 @@ protected:
 
 	void PressShootKey();
 
+	void ReleasedShootKey();
+
 	void PressReloadKey();
 
 protected:

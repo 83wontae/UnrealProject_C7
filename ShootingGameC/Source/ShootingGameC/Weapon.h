@@ -62,9 +62,14 @@ protected:
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PressKey_F();
+	void PressKey_Shoot();
 	
-	virtual void PressKey_F_Implementation() override;
+	virtual void PressKey_Shoot_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ReleasedKey_Shoot();
+
+	virtual void ReleasedKey_Shoot_Implementation() {};
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PressKey_R();

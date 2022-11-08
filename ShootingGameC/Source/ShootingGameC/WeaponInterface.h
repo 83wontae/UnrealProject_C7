@@ -16,9 +16,14 @@ class SHOOTINGGAMEC_API IWeaponInterface
 
 public:
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-    void PressKey_F();
+    void PressKey_Shoot();
 
-    virtual void PressKey_F_Implementation() {};
+    virtual void PressKey_Shoot_Implementation() {};
+
+    UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+    void ReleasedKey_Shoot();
+
+    virtual void ReleasedKey_Shoot_Implementation() {};
 
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
     void PressKey_R();

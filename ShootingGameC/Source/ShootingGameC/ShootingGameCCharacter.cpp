@@ -96,6 +96,7 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	// ShootKey
 	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressShootKey);
+	PlayerInputComponent->BindAction("ShootKey", IE_Released, this, &AShootingGameCCharacter::ReleasedShootKey);
 
 	// Reload
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShootingGameCCharacter::PressReloadKey);
@@ -302,7 +303,17 @@ void AShootingGameCCharacter::PressShootKey()
 
 	if (InterfaceObj)
 	{
-		InterfaceObj->Execute_PressKey_F(EquippedWeapon);
+		InterfaceObj->Execute_PressKey_Shoot(EquippedWeapon);
+	}
+}
+
+void AShootingGameCCharacter::ReleasedShootKey()
+{
+	IWeaponInterface* InterfaceObj = Cast<IWeaponInterface>(EquippedWeapon);
+
+	if (InterfaceObj)
+	{
+		InterfaceObj->Execute_ReleasedKey_Shoot(EquippedWeapon);
 	}
 }
 

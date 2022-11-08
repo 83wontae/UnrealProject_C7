@@ -116,7 +116,7 @@ void AWeapon::ServerNotifyShoot_Implementation(const FVector vStart, const FVect
 
 }
 
-void AWeapon::PressKey_F_Implementation()
+void AWeapon::PressKey_Shoot_Implementation()
 {
 	ServerPullTrigger();
 }
@@ -149,6 +149,7 @@ void AWeapon::NotifyReload_Implementation()
 void AWeapon::OnCharacterEquip_Implementation(ACharacter* targetChar)
 {
 	OwnChar = targetChar;
+	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	OnUpdateHUD();
 }
 
