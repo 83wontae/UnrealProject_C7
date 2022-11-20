@@ -12,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShootingPlayerState.h"
+#include "Weapon.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AShootingGameCCharacter
@@ -92,7 +93,7 @@ void AShootingGameCCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AShootingGameCCharacter::OnResetVR);
 
 	// TestKeyF
-	PlayerInputComponent->BindAction("TestKeyF", IE_Pressed, this, &AShootingGameCCharacter::PressTestKeyF);
+	PlayerInputComponent->BindAction("PickUp", IE_Pressed, this, &AShootingGameCCharacter::PressPickUp);
 
 	// ShootKey
 	PlayerInputComponent->BindAction("ShootKey", IE_Pressed, this, &AShootingGameCCharacter::PressShootKey);
@@ -279,21 +280,28 @@ void AShootingGameCCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVecto
 	StopJumping();
 }
 
-void AShootingGameCCharacter::PressTestKeyF()
+void AShootingGameCCharacter::PressPickUp()
 {
-	AShootingPlayerState* ps = Cast<AShootingPlayerState>(GetPlayerState());
-	if (ps)
+	AActor* nearestActor = nullptr;
+	float nearestDest = 9999999;
+	TArray<AActor*> actors;
+	GetCapsuleComponent()->GetOverlappingActors(actors, AWeapon::StaticClass());
+	for(AActor* weapon : actors)
 	{
-		ps->AddDamage(10.0f);
+		float Dest = (this->GetActorLocation() - weapon->GetActorLocation()).Size();
+		if (Dest < nearestDest)
+		{
+			nearestDest = Dest;
+			nearestActor = weapon;
+		}
 	}
 
-	if (IsRagDoll)
+	if (nearestActor)
 	{
-		DoGetup();
-	}
-	else
-	{
-		DoRagdoll();
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+			FString::Printf(TEXT("PressPickUp weapon=%s"), *nearestActor->GetName()));
+
+		SetEquippedWeapon(nearestActor);
 	}
 }
 

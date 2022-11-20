@@ -26,6 +26,13 @@ AWeapon::AWeapon()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 
 	CurrentAmmo = 30;
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> datatable(TEXT("DataTable'/Game/ShootingGame/GameMode/NewDataTable.NewDataTable'"));
+
+	if (datatable.Succeeded())
+	{
+		WeaponTable = datatable.Object;
+	}
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -33,9 +40,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, OwnChar);
-	DOREPLIFETIME(AWeapon, AnimMontage_Shoot);
-	DOREPLIFETIME(AWeapon, AnimMontage_Reload);
-	DOREPLIFETIME(AWeapon, FireEffect);
+	DOREPLIFETIME(AWeapon, WeaponName);
 	DOREPLIFETIME(AWeapon, CurrentAmmo);
 }
 
@@ -43,7 +48,20 @@ void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetim
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (WeaponTable)
+	{
+		auto List = WeaponTable->GetRowNames();
+		//WeaponName = List[FMath::RandRange(0, List.Num() - 1)];
+		WeaponName = List[0];
+		st_weapon = WeaponTable->FindRow<FStWeapon>(WeaponName, FString(""));
+		if (st_weapon)
+		{
+			mesh->SetStaticMesh(st_weapon->StaticMesh);
+			mesh->SetCollisionProfileName(TEXT("Weapon"));
+			mesh->SetSimulatePhysics(true);
+		}
+	}
 }
 
 // Called every frame
@@ -68,12 +86,11 @@ void AWeapon::MulticastPullTrigger_Implementation()
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("MulticastPullTrigger_Implementation"));
 
 	check(OwnChar);
-	check(AnimMontage_Shoot);
-	check(FireEffect);
+	check(st_weapon);
 
-	OwnChar->PlayAnimMontage(AnimMontage_Shoot);
+	OwnChar->PlayAnimMontage(st_weapon->AnimMontage_Shoot);
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), st_weapon->FireEffect
 		, mesh->GetSocketLocation("muzzle"), mesh->GetSocketRotation("muzzle"), FVector(0.2f, 0.2f, 0.2f));
 }
 
@@ -85,9 +102,9 @@ void AWeapon::ServerReload_Implementation()
 void AWeapon::MulticastReload_Implementation()
 {
 	check(OwnChar);
-	check(AnimMontage_Reload);
+	check(st_weapon->AnimMontage_Reload);
 
-	OwnChar->PlayAnimMontage(AnimMontage_Reload);
+	OwnChar->PlayAnimMontage(st_weapon->AnimMontage_Reload);
 }
 
 void AWeapon::ServerNotifyShoot_Implementation(const FVector vStart, const FVector vEnd)
@@ -149,7 +166,9 @@ void AWeapon::NotifyReload_Implementation()
 void AWeapon::OnCharacterEquip_Implementation(ACharacter* targetChar)
 {
 	OwnChar = targetChar;
+	mesh->SetSimulatePhysics(false);
 	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	mesh->AttachToComponent(targetChar->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "weapon");
 	OnUpdateHUD();
 }
 

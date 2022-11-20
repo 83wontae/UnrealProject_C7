@@ -120,7 +120,7 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-	void PressTestKeyF();
+	void PressPickUp();
 
 	void PressShootKey();
 

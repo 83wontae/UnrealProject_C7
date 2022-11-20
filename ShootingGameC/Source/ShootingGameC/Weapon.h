@@ -3,9 +3,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "WeaponInterface.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
+
+USTRUCT(BlueprintType)
+struct FStWeapon : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	FStWeapon()
+	: AnimMontage_Shoot(nullptr)
+	, AnimMontage_Reload(nullptr)
+	, FireEffect(nullptr)
+	, StaticMesh(nullptr)
+	{}
+
+	//~ 다음 멤버 변수는 블루프린트 그래프를 통해 액세스할 수 있습니다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* AnimMontage_Shoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* AnimMontage_Reload;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* FireEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMesh* StaticMesh;
+};
 
 UCLASS()
 class SHOOTINGGAMEC_API AWeapon : public AActor, public IWeaponInterface
@@ -48,13 +76,11 @@ public:
 	ACharacter* OwnChar;
 
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
-	UAnimMontage* AnimMontage_Shoot;
+	FName WeaponName;
 
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
-	UAnimMontage* AnimMontage_Reload;
+	UDataTable* WeaponTable;
 
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Default", Meta = (ExposeOnSpawn = "true"))
-	UParticleSystem* FireEffect;
+	FStWeapon* st_weapon;
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmo)
