@@ -38,13 +38,19 @@ void AShootingPlayerState::OnRep_CurrentHealth()
 
 void AShootingPlayerState::AddDamage(float Damage)
 {
-	if (GetLocalRole() == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-			FString::Printf(TEXT("AddDamage CurrentHealth=%f , Damage=%f"), GetCurrentHealth(), Damage));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+		FString::Printf(TEXT("AddDamage CurrentHealth=%f , Damage=%f"), GetCurrentHealth(), Damage));
 
-		CurrentHealth = CurrentHealth - Damage;
+	CurrentHealth = CurrentHealth - Damage;
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, 100.0f);
 
-		OnRep_CurrentHealth();
-	}
+	OnRep_CurrentHealth();
+}
+
+void AShootingPlayerState::AddHealth_Implementation(float Heal)
+{
+	CurrentHealth = CurrentHealth + Heal;
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, 100.0f);
+
+	OnRep_CurrentHealth();
 }

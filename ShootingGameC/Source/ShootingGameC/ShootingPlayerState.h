@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemObjectInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "ShootingPlayerState.generated.h"
 
@@ -13,7 +14,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_UpdateHp_OneParam, float);
  *
  */
 UCLASS()
-class SHOOTINGGAMEC_API AShootingPlayerState : public APlayerState
+class SHOOTINGGAMEC_API AShootingPlayerState : public APlayerState, public IItemObjectInterface
 {
 	GENERATED_BODY()
 
@@ -34,6 +35,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddDamage(float Damage);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddHealth(float Heal);
+
+	virtual void AddHealth_Implementation(float Heal) override;
 
 	FDele_Multi_UpdateHp Fuc_Dele_UpdateHp;
 	FDele_Multi_UpdateHp_OneParam Fuc_Dele_UpdateHp_OneParam;
